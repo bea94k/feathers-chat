@@ -1,6 +1,7 @@
 module.exports = function (options = {}) { // eslint-disable-line no-unused-vars
   return async context => {
     const { data } = context;
+    console.log('BEFORE',context.data)
 
     // Throw an error if we didn't get a text
     if(!data.text) {
@@ -17,10 +18,12 @@ module.exports = function (options = {}) { // eslint-disable-line no-unused-vars
     context.data = {
       text,
       // Set the user id
-      userId: user._id,
+      userId: user._id.toString(),
       // Add the current date
       createdAt: new Date().getTime()
     };
+
+    console.log('AFTER',context.data)
 
     return context;
   };

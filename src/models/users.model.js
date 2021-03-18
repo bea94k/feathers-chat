@@ -1,14 +1,24 @@
-const NeDB = require('nedb');
-const path = require('path');
-
+// messages-model.js - A mongoose model
+// 
+// See http://mongoosejs.com/docs/models.html
+// for more of what you can do here.
 module.exports = function (app) {
-  const dbPath = app.get('nedb');
-  const Model = new NeDB({
-    filename: path.join(dbPath, 'users.db'),
-    autoload: true
+  const modelName = 'users';
+  const mongooseClient = app.get('mongooseClient');
+  const { Schema } = mongooseClient;
+  const schema = new Schema({
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    avatar: { type: String, required: true },
+  }, {
+    timestamps: true
   });
 
-  Model.ensureIndex({ fieldName: 'email', unique: true });
-
-  return Model;
+  // This is necessary to avoid model compilation errors in watch mode
+  // see https://mongoosejs.com/docs/api/connection.html#connection_Connection-deleteModel
+  if (mongooseClient.modelNames().includes(modelName)) {
+    mongooseClient.deleteModel(modelName);
+  }
+  return mongooseClient.model(modelName, schema);
+  
 };

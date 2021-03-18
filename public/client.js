@@ -106,7 +106,8 @@ const addUser = user => {
 // Renders a message to the page
 const addMessage = message => {
   // The user that sent this message (added by the populate-user hook)
-  const { user = {} } = message;
+  console.log(message)
+  const { user = {name: "", email:""} } = message;
   const chat = document.querySelector('.chat');
   // Escape HTML to prevent XSS attacks
   const text = escape(message.text);
@@ -145,7 +146,8 @@ const showChat = async () => {
   const messages = await client.service('messages').find({
     query: {
       $sort: { createdAt: -1 },
-      $limit: 25
+      $limit: 25,
+      $populate: 'user'
     }
   });
   
@@ -224,16 +226,25 @@ addEventListener('#logout', 'click', async () => {
   document.getElementById('app').innerHTML = loginHTML;
 });
 
+
 // "Send" message form submission handler
 addEventListener('#send-message', 'submit', async ev => {
   // This is the message text input field
   const input = document.querySelector('[name="text"]');
-
+  
   ev.preventDefault();
+  
+  // get user from auth
+    const { user } = await client.get('authentication');
+    console.log('USER', user);
 
   // Create a new message and then clear the input field
   await client.service('messages').create({
-    text: input.value
+    text: input.value,
+    user: user._id
+    /* text: "DUPA2",
+    user: 'bombelunio' */
+    /*  EVEN WITH HARD-CODED VALUES, IT ONLY SAVES THE TEXT TO THE DB, NEVER THE USER */
   });
 
   input.value = '';
