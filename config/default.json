@@ -35,5 +35,6 @@
       "passwordField": "password"
     }
   },
-  "nedb": "../data"
+  "nedb": "../data",
+  "mongodb": "MONGODBCONNECTION"
 }
